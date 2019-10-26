@@ -1,0 +1,11 @@
+body {
+    padding-top: 60px;
+    background: rgb(214, 223, 231);
+    padding-bottom: 80px;
+  }
+
+.bg-div {
+    background: scroll center url('../home/background.jpg');
+    background-size: cover;
+    height: 60%
+}

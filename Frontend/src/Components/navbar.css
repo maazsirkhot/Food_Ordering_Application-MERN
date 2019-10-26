@@ -1,0 +1,21 @@
+.mynewnavbar{
+    background: rgb(224, 8, 8) ; 
+    margin-bottom: 0px !important;
+  }
+  
+  .navbarnewcontainer{
+    vertical-align: 50%;
+  }
+
+  .navbarLogoTraveler{
+    font-size: 40px;
+    color:blue;
+    margin-left: 30%;
+    
+  }
+  .navbarbirdhouse{
+    padding: 1%;
+  }
+  .navbar-header{
+    padding-top: 0.5%;
+  }
