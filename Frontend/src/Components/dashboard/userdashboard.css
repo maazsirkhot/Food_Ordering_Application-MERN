@@ -1,6 +1,6 @@
 body {
     padding-top: 60px;
-    background: rgb(214, 223, 231);
+    background: rgb(255, 255, 255);
     padding-bottom: 80px;
     min-height: 100vh;
   }
@@ -25,7 +25,7 @@ body {
 .page-content {
   width: calc(100% - 17rem);
   margin-left: 17rem;
-  transition: all 0.4s;
+  transition: all;
 }
 
 .text-uppercase {
@@ -33,5 +33,5 @@ body {
 }
 
 .text-gray {
-  color: #aaa;
+  color: rgb(255, 255, 255);
 }

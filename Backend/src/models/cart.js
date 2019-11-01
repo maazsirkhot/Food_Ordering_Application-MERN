@@ -41,7 +41,18 @@ Cart = new Schema({
     price: {
         type: Number,
         required: true
-    }
+    },
+    messages: [
+        {
+            author: {
+                type: String
+            },
+            message: {
+                type: String
+            }
+
+        }
+    ]
 
 })
 

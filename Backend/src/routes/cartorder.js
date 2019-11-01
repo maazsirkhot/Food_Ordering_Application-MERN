@@ -257,7 +257,26 @@ router.route('/updateStatus').post(passport.authenticate('jwt', { session: false
     })
 })
 
-
+router.route('/addMessage').post(passport.authenticate('jwt', { session: false }), function (req, res){
+    console.log("Inside Add Message");
+    var cartid = req.body.cartid;
+    var msg = {
+        author : req.body.username,
+        message : req.body.message
+    }
+    console.log(msg)
+    Carts.updateMany({cartid : cartid}, {$push: {"messages": msg}}, (err, result) => {
+        if (err) {
+            console.log(err);
+            console.log("Unable to update Database");
+            res.status(400).json({responseMessage: 'Error Occurred'});
+        } else {
+            console.log("Result:", result)
+            console.log("Message add Successful");
+            res.status(200).json({responseMessage: result});
+        } 
+    })
+})
 
 
 module.exports = router;

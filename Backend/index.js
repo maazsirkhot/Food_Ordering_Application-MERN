@@ -20,7 +20,7 @@ var jwt = require('jsonwebtoken');
 app.use(passport.initialize());
 console.log("Initializing passport");
 
-
+// 
 
 mongoose
   .connect(db, { useNewUrlParser: true, useUnifiedTopology: true }) // Let us remove that nasty deprecation warrning :)

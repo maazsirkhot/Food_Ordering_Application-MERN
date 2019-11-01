@@ -32,7 +32,8 @@ class NavBarLogin extends Component{
     render() {
         let redirectVar = null;
         let dashboard = null;
-        if (!localStorage.getItem("token")) {
+        if (!localStorage.getItem("token") || !cookie.load("cookie")) {
+            localStorage.clear();
             redirectVar = <Redirect to="/" />;
         } else {
             if(cookie.load("cookie") == "ownercookie")

@@ -6,6 +6,7 @@ import NavBarLogin from "../navbarlogin";
 import "./userdashboard.css";
 import axios from 'axios';
 import {rooturl} from '../../config';
+import Draggable, {DraggableCore} from 'react-draggable';
 
 class OwnerDashboard extends Component{
     constructor(props){
@@ -176,9 +177,19 @@ class OwnerDashboard extends Component{
             </ul>
             </div>
             <div class="page-content p-5" id="content">
-
+            
             <h4>Your Orders</h4>
                     <div class="panel-group" id="accordion">
+                    <div class="card-deck">
+            {/* <Draggable>
+            
+            <div class="card">
+            <button class="btn btn-info">Order1</button>
+                <div class="card-body">Content</div>
+            </div>
+            </Draggable> */}
+            
+            </div>
                         <div class="panel panel-default">
                             <div class="panel-heading">
                                 <h4 class="panel-title">

@@ -98,9 +98,10 @@ router.route('/SignUpOwner').post(function(req, res){
 })
 
 router.route('/loginUser').post((req, res) => {
+    console.log("Inside login");
     var username = req.body.username;
     var password = req.body.password;
-    
+    console.log(username, password)
     Users.findOne({username : username}, (err, user) => {
         if (err){
             console.log(err);
@@ -139,6 +140,7 @@ router.route('/loginUser').post((req, res) => {
 });
 
 router.route('/loginOwner').post((req, res) => {
+    console.log("Inside login");
     var email = req.body.username;
     var password = req.body.password;
 
