@@ -96,6 +96,7 @@ router.route('/getOwnerOrders').post(passport.authenticate('jwt', { session: fal
                                 address: item.address,
                                 orderstatus: item.orderstatus,
                                 totalprice: item.totalprice,
+                                messages : item.messages,
                                 items: [itm = {
                                     itemname: item.itemname,
                                     quantity: item.quantity,
@@ -278,5 +279,26 @@ router.route('/addMessage').post(passport.authenticate('jwt', { session: false }
     })
 })
 
+router.route('/getMessage').post(passport.authenticate('jwt', { session: false }), function (req, res){
+    console.log("Inside Get Message");
+    var cartid = req.body.cartid;
+    var messages = [];
+    console.log(cartid)
+    Carts.findOne({cartid : cartid}, (err, result) => {
+        if (err) {
+            console.log(err);
+            console.log("Unable to update Database");
+            res.status(400).json({responseMessage: 'Error Occurred'});
+        } else {
+            console.log("Result:", result)
+            if(result != null){
+                messages = result.messages;
+            }
+            
+            console.log(messages);
+            res.status(200).json({responseMessage: messages});
+        } 
+    })
+})
 
 module.exports = router;

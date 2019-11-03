@@ -7,7 +7,14 @@ import "./userdashboard.css";
 import axios from 'axios';
 import {rooturl} from '../../config';
 import Draggable, {DraggableCore} from 'react-draggable';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { Modal, Button } from 'react-bootstrap';
 
+
+const cardstyle = {
+    width: '300px',
+    
+} 
 class OwnerDashboard extends Component{
     constructor(props){
         super(props);
@@ -17,11 +24,15 @@ class OwnerDashboard extends Component{
             otherOrders : "",
             orderCheck : "",
             orderStatus : "",
-            updateStatus : ""
-            
+            updateStatus : "",
+            showModal: false,
+            messages : "",
+            newMessage : ""            
         }
         this.changeHandler = this.changeHandler.bind(this);
         this.updateStatus = this.updateStatus.bind(this);
+        this.sendMessages = this.sendMessages.bind(this);
+        //this.modalMessages = this.modalMessages.bind(this);
     }
 
     changeHandler = (e) => {
@@ -67,7 +78,7 @@ class OwnerDashboard extends Component{
         e.preventDefault();
         var element;
         for (element in this.state){
-            if(element == "restname" || element == "newOrders" || element == "otherOrders" || element == "orderCheck" || element == "orderStatus" || element == "updateStatus"){
+            if(element == "restname" || element == "newOrders" || element == "otherOrders" || element == "orderCheck" || element == "orderStatus" || element == "updateStatus" || element == "showModal" || element == "modalCartid" || element == "messages" || element == "newMessage"){
                 continue;
             } else {
                 if(this.state[element] == "PREPARING" || this.state[element] == "READY" || this.state[element] == "DELIVERED" || this.state[element] == "CANCELLED"){
@@ -101,6 +112,80 @@ class OwnerDashboard extends Component{
             }
         }
     }
+
+    sendMessages(e){
+        e.preventDefault();
+        const data = {
+            cartid : this.state.modalCartid,
+            username : this.state.restname,
+            message : this.state.newMessage
+        }
+        console.log(data);
+
+        axios.defaults.headers.common["Authorization"] = localStorage.getItem("token") ? localStorage.getItem("token") : "";
+        axios.post(rooturl + '/addMessage', data)
+        .then(response => {
+            console.log("Response Status: " + response.status);
+            if(response.status === 200){
+                console.log(response.data);
+                alert("Message Sent");
+                this.setState({
+                    newMessage : "",
+                    showModal : false
+                })
+                //console.log(this.state.menu);
+            } else {
+                console.log("No Items found");
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            this.setState({
+                newMessage : ""
+            })
+        })
+
+    }
+
+    handleClose = () => {
+        this.setState({
+            showModal : false
+        })
+    };
+
+    handleShow = (e) => {
+        this.setState({
+            showModal : true,
+            modalCartid : e.target.value
+        })
+        const data = {
+            cartid : e.target.value //this.state.modalCartid
+        } 
+        console.log(data.cartid);
+        axios.defaults.headers.common["Authorization"] = localStorage.getItem("token") ? localStorage.getItem("token") : "";
+        axios.post(rooturl + '/getMessage', data)
+        .then(response => {
+            console.log("Response Status: " + response.status);
+            if(response.status === 200){
+                console.log(response.data);
+                var allMessages = response.data.responseMessage;
+                this.setState({
+                    messages : allMessages
+                })
+                //console.log(this.state.menu);
+            } else {
+                console.log("No Items found");
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            this.setState({
+                messages : ""
+            })
+        })
+    };
+
+    
     
     render(){
         let redirectVar = null;
@@ -108,49 +193,75 @@ class OwnerDashboard extends Component{
             redirectVar = <Redirect to = '/OwnerDashboard'/>
         }
 
-
         if(this.state.orderCheck){
             var itemDetails = (items) => {
                 var rows = items.map(itm => {
-                    return (
-                        <tr key={itm.itemname}>
-                        <td>{itm.itemname} - {itm.quantity} X ${itm.itemprice} = {itm.price}</td>
-                        </tr>
+                    return (  
+                        <ul key={itm.itemname}>{itm.itemname} - {itm.quantity} X ${itm.itemprice} = {itm.price}</ul> 
                     )
                 })
                 return rows;
             }
     
             var newOrderDetails = this.state.newOrders.map(result => {
-                return(
-                    <tbody key={result.cartid}>
-                    <tr>
-                    <th>ID : {result.cartid} | Customer : {result.username} | Status : {result.orderstatus} | Total : {result.totalprice}</th>
+                return(  
+                    <div className="card" style={cardstyle}>
+                    <div className="card-header bg-danger text-white">ID : {result.cartid}<br></br>Total : {result.totalprice}</div>
+                    <div className="card-body">
+                    <div>
                     
-                    </tr>
-                    <tr><th>Address : {result.address}</th>
-                    <th><input type="text" className="form-control" name={result.cartid} onChange = {this.changeHandler} placeholder="PREPARING, READY, DELIVERED" id={result.cartid}/></th>
-                    <th><button value={result.cartid} onClick={this.updateStatus} class="btn btn-danger">Update Status</button></th>
-                    </tr>
+                    </div>
+                        {result.username}<br></br>Status : {result.orderstatus}
+                        <br></br>
+                        Address : {result.address}
+                    <div>
+                    Items:<br></br>
                     {itemDetails(result.items)}
+                    </div>
+                    </div>
+                    <div className="card-footer">
+                    <input type="text" className="form-control" name={result.cartid} onChange = {this.changeHandler} placeholder="PREPARING, READY, DELIVERED" id={result.cartid}/>
+                    <button value={result.cartid} onClick={this.updateStatus} className="btn btn-danger">Update Status</button> <br></br>  
                     
-                    </tbody>
+                    <button className="btn btn-danger" data-toggle="modal" data-target="#myModal" value={result.cartid} onClick={this.handleShow}>Message</button>
+                    </div>
+                    </div>
+                    
+                    
                 );
             });
     
             var otherOrderDetails = this.state.otherOrders.map(result => {
                 return(
-                    <tbody key={result.cartid}>
-                    <tr>
-                    <th>ID : {result.cartid} | Customer : {result.username} | Status : {result.orderstatus} | Total : {result.totalprice}</th>
-                    </tr>
-                    <tr><th>Address : {result.address}</th>
                     
-                    </tr>
+                    <div className="card" style={cardstyle}>
+                    <div className="card-header bg-danger text-white">ID : {result.cartid}<br></br>Total : {result.totalprice}</div>
+                    <div className="card-body">
+                        {result.username}<br></br>Status : {result.orderstatus}
+                        <br></br>
+                        Address : {result.address}
+                    <div>
+                    Items:<br></br>
                     {itemDetails(result.items)}
-                    </tbody>
+                    </div>
+                    </div>
+                    </div>
+                    
                 );
             });
+
+            
+        }
+
+        if(this.state.messages){
+            //console.log(this.state.messages);
+            var modalMessages = this.state.messages.map(message => {
+                return(
+                    <div>
+                        <p><em>{message.author}</em> : {message.message}</p>
+                    </div>
+                )
+            })
     
         }
 
@@ -158,20 +269,20 @@ class OwnerDashboard extends Component{
             <div>
             <NavBarLogin />
             {redirectVar}
-            <div class="vertical-nav bg-danger" id="sidebar">
-            <p class="text-gray font-weight-bold text-uppercase px-3 small pb-4 mb-0">Dashboard</p>
-            <ul class="nav flex-column bg-white mb-0">
-                <li class="nav-item">
+            <div className="vertical-nav bg-danger" id="sidebar">
+            <p className="text-gray font-weight-bold text-uppercase px-3 small pb-4 mb-0">Dashboard</p>
+            <ul className="nav flex-column bg-white mb-0">
+                <li className="nav-item">
                     <a href="/OwnerProfile" class="nav-link text-dark font-italic bg-light">
-                    <i class="fa fa-th-large mr-3 text-primary fa-fw"></i>Profile
+                    <i className="fa fa-th-large mr-3 text-primary fa-fw"></i>Profile
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="/ViewMenu" class="nav-link text-dark font-italic bg-light">
-                    <i class="fa fa-th-large mr-3 text-primary fa-fw"></i>Restaurant Menu
+                    <a href="/ViewMenu" className="nav-link text-dark font-italic bg-light">
+                    <i className="fa fa-th-large mr-3 text-primary fa-fw"></i>Restaurant Menu
                     </a></li> 
-                    <li class="nav-item">
-                    <a href="/MenuUpdate" class="nav-link text-dark font-italic bg-light">
+                    <li className="nav-item">
+                    <a href="/MenuUpdate" className="nav-link text-dark font-italic bg-light">
                     <i class="fa fa-th-large mr-3 text-primary fa-fw"></i>Update Menu
                     </a></li>
             </ul>
@@ -197,31 +308,45 @@ class OwnerDashboard extends Component{
                                 </h4>
                             </div>
                             <div id="collapse1" class="panel-collapse collapse in">
-                            <table class="table table-hover">
-                                <thead>
-                                </thead>
-                                {newOrderDetails}        
-                             </table>
+                            {newOrderDetails}
+                            
                             </div>
                         </div>
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h4 class="panel-title">
-                                <button class="btn btn-danger" data-toggle="collapse" data-parent="#accordion" data-target="#collapse2">Past Orders</button>
+                        <div className="panel panel-default">
+                            <div className="panel-heading">
+                                <h4 className="panel-title">
+                                <button className="btn btn-danger" data-toggle="collapse" data-parent="#accordion" data-target="#collapse2">Past Orders</button>
                                 </h4>
                             </div>
-                            <div id="collapse2" class="panel-collapse collapse">
-                            <table class="table table-hover">
+                            <div id="collapse2" className="panel-collapse collapse">
+                            {otherOrderDetails} 
+                            {/* <table class="table table-hover">
                                 <thead>
                                 </thead>
-                                {otherOrderDetails}        
-                             </table>
+                                       
+                             </table> */}
                             </div>
                         </div>
                     </div>
 
 
             </div>
+
+            <Modal show={this.state.showModal} onHide={this.handleClose}>
+            <Modal.Header closeButton>
+            <Modal.Title>Messages</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>{modalMessages}
+            <div>
+            <textarea rows="2" cols="50" name="newMessage" onChange = {this.changeHandler} placeholder="Type Message"></textarea>
+            <Button variant="primary btn-danger"  onClick={this.sendMessages}>Send Message</Button>
+            </div>
+            </Modal.Body>
+            <Modal.Footer>
+            <Button variant="secondary btn-info" onClick={this.handleClose}>Close</Button>
+            
+            </Modal.Footer>
+            </Modal>
 
             </div>
         )
