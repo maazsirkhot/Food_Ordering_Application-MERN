@@ -6,6 +6,13 @@ import NavBarLogin from "../navbarlogin";
 import "../dashboard/userdashboard.css";
 import axios from 'axios';
 import {rooturl} from '../../config';
+import { Modal, Button } from 'react-bootstrap';
+
+
+const cardstyle = {
+    width: '300px',
+    
+} 
 
 class UserOrders extends Component{
     constructor(props){
@@ -14,8 +21,20 @@ class UserOrders extends Component{
             username : cookie.load('cookieemail'),
             newOrders : "",
             otherOrders : "",
-            orderCheck : ""
+            orderCheck : "",
+            showModal: false,
+            messages : "",
+            newMessage : ""
         }
+        this.changeHandler = this.changeHandler.bind(this);
+        this.sendMessages = this.sendMessages.bind(this);
+    }
+
+    changeHandler = (e) => {
+        this.setState({
+                [e.target.name] : e.target.value
+        })
+        //console.log(this.state);
     }
 
     componentWillMount(){
@@ -51,6 +70,78 @@ class UserOrders extends Component{
         })
     }
 
+    handleClose = () => {
+        this.setState({
+            showModal : false
+        })
+    };
+
+    handleShow = (e) => {
+        this.setState({
+            showModal : true,
+            modalCartid : e.target.value
+        })
+        const data = {
+            cartid : e.target.value //this.state.modalCartid
+        } 
+        console.log(data.cartid);
+        axios.defaults.headers.common["Authorization"] = localStorage.getItem("token") ? localStorage.getItem("token") : "";
+        axios.post(rooturl + '/getMessage', data)
+        .then(response => {
+            console.log("Response Status: " + response.status);
+            if(response.status === 200){
+                console.log(response.data);
+                var allMessages = response.data.responseMessage;
+                this.setState({
+                    messages : allMessages
+                })
+                //console.log(this.state.menu);
+            } else {
+                console.log("No Items found");
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            this.setState({
+                messages : ""
+            })
+        })
+    };
+
+    sendMessages(e){
+        e.preventDefault();
+        const data = {
+            cartid : this.state.modalCartid,
+            username : this.state.username,
+            message : this.state.newMessage
+        }
+        console.log(data);
+
+        axios.defaults.headers.common["Authorization"] = localStorage.getItem("token") ? localStorage.getItem("token") : "";
+        axios.post(rooturl + '/addMessage', data)
+        .then(response => {
+            console.log("Response Status: " + response.status);
+            if(response.status === 200){
+                console.log(response.data);
+                alert("Message Sent");
+                this.setState({
+                    newMessage : "",
+                    showModal : false
+                })
+                //console.log(this.state.menu);
+            } else {
+                console.log("No Items found");
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            this.setState({
+                newMessage : ""
+            })
+        })
+
+    }
+
     
     render(){
 
@@ -58,9 +149,7 @@ class UserOrders extends Component{
         var itemDetails = (items) => {
             var rows = items.map(itm => {
                 return (
-                    <tr key={itm.itemname}>
-                    <td>{itm.itemname} - {itm.quantity} X ${itm.itemprice} = {itm.price}</td>
-                    </tr>
+                    <ul key={itm.itemname}>{itm.itemname} - {itm.quantity} X ${itm.itemprice} = {itm.price}</ul>
                 )
             })
             return rows;
@@ -69,28 +158,57 @@ class UserOrders extends Component{
 
         var newOrderDetails = this.state.newOrders.map(result => {
             return(
-                <tbody key={result.cartid}>
-                <tr>
-                <th>ID : {result.cartid} | Restaurant : {result.rest_name} | Status : {result.orderstatus} | Total : {result.totalprice}</th>
-                </tr>
-                {itemDetails(result.items)}
-                
-                </tbody>
+                <div className="card" style={cardstyle}>
+                    <div className="card-header bg-danger text-white">ID : {result.cartid}<br></br>Total : {result.totalprice}</div>
+                    <div className="card-body">
+                    <div>
+                    
+                    </div>
+                        {result.restname}<br></br>Status : {result.orderstatus}
+                    <div>
+                    Items:<br></br>
+                    {itemDetails(result.items)}
+                    </div>
+                    </div>
+                    <div className="card-footer">
+                      
+                    
+                    <button className="btn btn-danger" data-toggle="modal" data-target="#myModal" value={result.cartid} onClick={this.handleShow}>Message</button>
+                    </div>
+                </div>
             );
         });
 
         var otherOrderDetails = this.state.otherOrders.map(result => {
             return(
-                <tbody key={result.cartid}>
-                <tr>
-                <th>ID : {result.cartid} | Restaurant : {result.rest_name} | Status : {result.orderstatus} | Total : {result.totalprice}</th>
-                </tr>
-                {itemDetails(result.items)}
-                </tbody>
+                <div className="card" style={cardstyle}>
+                    <div className="card-header bg-danger text-white">ID : {result.cartid}<br></br>Total : {result.totalprice}</div>
+                    <div className="card-body">
+                        {result.restname}<br></br>Status : {result.orderstatus}
+                    <div>
+                    Items:<br></br>
+                    {itemDetails(result.items)}
+                    </div>
+                    </div>
+                </div>
             );
         });
 
     }
+
+    if(this.state.messages){
+        //console.log(this.state.messages);
+        var modalMessages = this.state.messages.map(message => {
+            return(
+                <div>
+                    <p><em>{message.author}</em> : {message.message}</p>
+                </div>
+            )
+        })
+
+    }
+
+
         return(
             <div>
                 <NavBarLogin />
@@ -117,11 +235,7 @@ class UserOrders extends Component{
                                 </h4>
                             </div>
                             <div id="collapse1" class="panel-collapse collapse in">
-                            <table class="table table-hover">
-                                <thead>
-                                </thead>
-                                {newOrderDetails}        
-                             </table>
+                            {newOrderDetails}
                             </div>
                         </div>
                         <div class="panel panel-default">
@@ -131,15 +245,28 @@ class UserOrders extends Component{
                                 </h4>
                             </div>
                             <div id="collapse2" class="panel-collapse collapse">
-                            <table class="table table-hover">
-                                <thead>
-                                </thead>
-                                {otherOrderDetails}        
-                             </table>
+                            {otherOrderDetails}
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <Modal show={this.state.showModal} onHide={this.handleClose}>
+            <Modal.Header closeButton>
+            <Modal.Title>Messages</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>{modalMessages}
+            <div>
+            <textarea rows="2" cols="50" name="newMessage" onChange = {this.changeHandler} placeholder="Type Message"></textarea>
+            <Button variant="primary btn-danger"  onClick={this.sendMessages}>Send Message</Button>
+            </div>
+            </Modal.Body>
+            <Modal.Footer>
+            <Button variant="secondary btn-info" onClick={this.handleClose}>Close</Button>
+            
+            </Modal.Footer>
+            </Modal>
+
             </div>
         )
         

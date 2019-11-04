@@ -189,6 +189,7 @@ router.route('/getUserOrders').post(passport.authenticate('jwt', { session: fals
                                 address: item.address,
                                 orderstatus: item.orderstatus,
                                 totalprice: item.totalprice,
+                                restname : item.restname,
                                 items: [itm = {
                                     itemname: item.itemname,
                                     quantity: item.quantity,
