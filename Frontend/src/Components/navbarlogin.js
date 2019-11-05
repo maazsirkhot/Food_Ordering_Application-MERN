@@ -14,7 +14,7 @@ class NavBarLogin extends Component{
     }
 
     componentDidMount(){
-        let username = cookie.load('cookiename');
+        let username = localStorage.getItem("cookiename");;
         this.setState({
             user : username
         })
@@ -32,7 +32,7 @@ class NavBarLogin extends Component{
     render() {
         let redirectVar = null;
         let dashboard = null;
-        if (!localStorage.getItem("token") || !cookie.load("cookie")) {
+        if (!localStorage.getItem("token")) {
             console.log("LocalStorage: " + localStorage.getItem("token"));
             localStorage.clear();
             redirectVar = <Redirect to="/" />;
