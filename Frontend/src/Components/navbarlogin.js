@@ -33,6 +33,7 @@ class NavBarLogin extends Component{
         let redirectVar = null;
         let dashboard = null;
         if (!localStorage.getItem("token") || !cookie.load("cookie")) {
+            console.log("LocalStorage: " + localStorage.getItem("token"));
             localStorage.clear();
             redirectVar = <Redirect to="/" />;
         } else {

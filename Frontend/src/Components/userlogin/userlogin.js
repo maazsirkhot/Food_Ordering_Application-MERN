@@ -50,7 +50,8 @@ class UserLogin extends Component{
                 if(response.status === 200){
                     localStorage.setItem('token', response.data.token);
                     console.log(response.data.responseMessage);
-                    console.log(this.state.logincheck);
+                    console.log(response.data.token);
+                    
                     this.setState({
                         logincheck : true
                     })
