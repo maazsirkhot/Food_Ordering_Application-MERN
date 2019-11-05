@@ -7,6 +7,11 @@ import { connect } from 'react-redux';
 import axios from 'axios';
 import {rooturl} from '../../config';
 
+function mapStateToProps(state){
+    return {
+        userLoginData: state.userLoginData
+    }
+}
 
 class UserLogin extends Component{
     constructor(props){
@@ -110,4 +115,4 @@ class UserLogin extends Component{
 
 }
 
-export default UserLogin;
+export default connect(mapStateToProps)(UserLogin);

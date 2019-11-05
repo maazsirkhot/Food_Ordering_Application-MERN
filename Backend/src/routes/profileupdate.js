@@ -5,6 +5,7 @@ var crypt = require('../helpers/passwordEncryption');
 var Users = require('../models/users');
 var Owners = require('../models/owners')
 var passport = require('passport');
+var kafka = require('../../Kafka/client');
 
 var multer = require('multer');
 var storage = multer.diskStorage({
@@ -34,18 +35,28 @@ router.route('/OwnerProfile').post(passport.authenticate('jwt', { session: false
         signupData.restimg = req.file.filename;
         console.log("Image received", signupData.restimg);
     }
-    
-    Owners.findOneAndUpdate({email:signupData.email}, signupData, (err,user) =>{
-        if (err) {
+
+    kafka.make_request('OwnerProfile', signupData, function(err,results){
+        if(err){
             console.log(err);
-            console.log("Unable to update Database");
-            res.status(400).json({responseMessage: 'Error Occurred'});
+            res.status(401).send({responseMessage : err});
         } else {
-            console.log("Result:", user)
-            console.log("Profile update Successful");
-            res.status(200).json({responseMessage: user});
-        } 
-    })
+            console.log("Process successful");
+            res.status(200).send({responseMessage : results.responseMessage});
+        }
+    });
+    
+    // Owners.findOneAndUpdate({email:signupData.email}, signupData, (err,user) =>{
+    //     if (err) {
+    //         console.log(err);
+    //         console.log("Unable to update Database");
+    //         res.status(400).json({responseMessage: 'Error Occurred'});
+    //     } else {
+    //         console.log("Result:", user)
+    //         console.log("Profile update Successful");
+    //         res.status(200).json({responseMessage: user});
+    //     } 
+    // })
 
 })
 
@@ -63,55 +74,92 @@ router.route('/UserProfile').post(passport.authenticate('jwt', { session: false 
         signupData.imglink = req.file.filename;
         console.log("Image received", signupData.imglink)
     }
-    
-    Users.findOneAndUpdate({username:signupData.username}, signupData, (err,user) =>{
-        if (err) {
+
+    kafka.make_request('UserProfile', signupData, function(err,results){
+        if(err){
             console.log(err);
-            console.log("Unable to update Database");
-            res.status(400).json({responseMessage: 'Error Occurred'});
+            res.status(401).send({responseMessage : err});
         } else {
-            console.log("Result:", user)
-            console.log("Profile update Successful");
-            res.status(200).json({responseMessage: user});
-        } 
-    })
+            console.log("Process successful");
+            res.status(200).send({responseMessage : results.responseMessage});
+        }
+    });
+    
+    // Users.findOneAndUpdate({username:signupData.username}, signupData, (err,user) =>{
+    //     if (err) {
+    //         console.log(err);
+    //         console.log("Unable to update Database");
+    //         res.status(400).json({responseMessage: 'Error Occurred'});
+    //     } else {
+    //         console.log("Result:", user)
+    //         console.log("Profile update Successful");
+    //         res.status(200).json({responseMessage: user});
+    //     } 
+    // })
 })
 
 router.route('/GetUserProfile').post(passport.authenticate('jwt', { session: false }), function(req, res){
     console.log("Inside get user profile");
 
     var username = req.body.username;
+    var msg = {
+        username : username
+    }
 
-    Users.findOne({username:username}, function(err,user){
-        if (err) {
+    kafka.make_request('GetUserProfile', msg, function(err,results){
+        if(err){
             console.log(err);
-            console.log("User not found");
-            res.status(400).json({responseMessage: 'Error Occurred'});
+            res.status(401).send({responseMessage : err});
         } else {
-            console.log("user:", user)
-            console.log("User Profile Fetched Successful");
-            res.status(200).json({responseMessage: user});
-        } 
-    })
+            console.log("Process successful");
+            res.status(200).send({responseMessage : results.responseMessage});
+        }
+    });
+
+    // Users.findOne({username:username}, function(err,user){
+    //     if (err) {
+    //         console.log(err);
+    //         console.log("User not found");
+    //         res.status(400).json({responseMessage: 'Error Occurred'});
+    //     } else {
+    //         console.log("user:", user)
+    //         console.log("User Profile Fetched Successful");
+    //         res.status(200).json({responseMessage: user});
+    //     } 
+    // })
 
 })
 
 router.route('/GetOwnerProfile').post(passport.authenticate('jwt', { session: false }), function(req, res){
-    console.log("Inside get user profile");
+    console.log("Inside get owner profile");
 
     var email = req.body.email;
 
-    Owners.findOne({email:email}, function(err,user){
-        if (err) {
+    var msg = {
+        email : email
+    }
+
+    kafka.make_request('GetOwnerProfile', msg, function(err,results){
+        if(err){
             console.log(err);
-            console.log("User not found");
-            res.status(400).json({responseMessage: 'Error Occurred'});
+            res.status(401).send({responseMessage : err});
         } else {
-            console.log("user:", user)
-            console.log("Owner Profile Fetched Successful");
-            res.status(200).json({responseMessage: user});
-        } 
-    })
+            console.log("Process successful");
+            res.status(200).send({responseMessage : results.responseMessage});
+        }
+    });
+
+    // Owners.findOne({email:email}, function(err,user){
+    //     if (err) {
+    //         console.log(err);
+    //         console.log("User not found");
+    //         res.status(400).json({responseMessage: 'Error Occurred'});
+    //     } else {
+    //         console.log("user:", user)
+    //         console.log("Owner Profile Fetched Successful");
+    //         res.status(200).json({responseMessage: user});
+    //     } 
+    // })
 
 })
 

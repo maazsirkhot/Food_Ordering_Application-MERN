@@ -1,5 +1,6 @@
 const port = process.env.PORT || 3001;
 const rooturl = "http://localhost:3000";
+//const rooturl = "";
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -15,12 +16,7 @@ const mongoose = require('mongoose');
 const db = require('./src/helpers/settings').mongoURI;
 var passport = require('passport');
 var jwt = require('jsonwebtoken');
-
-
-app.use(passport.initialize());
-console.log("Initializing passport");
-
-// 
+ 
 
 mongoose
   .connect(db, { useNewUrlParser: true, useUnifiedTopology: true }) // Let us remove that nasty deprecation warrning :)
