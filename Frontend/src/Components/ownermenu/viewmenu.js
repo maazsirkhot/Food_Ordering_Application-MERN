@@ -11,7 +11,7 @@ class ViewMenu extends Component{
     constructor(props){
         super(props);
         this.state = {
-            restname : cookie.load('cookierestname'),
+            restname : localStorage.getItem("cookierestname"),
             menu : [],
             menuCheck : ""
         }

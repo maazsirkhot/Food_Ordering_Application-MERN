@@ -25,7 +25,7 @@ class ViewRestaurant extends Component {
 
     componentWillMount(){
         //console.log(this.props.location.state.restname);
-        let username = cookie.load('cookieemail');
+        let username = localStorage.getItem("cookieemail");
         this.setState({
             user : username
         })

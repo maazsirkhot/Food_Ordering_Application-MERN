@@ -37,7 +37,7 @@ class NavBarLogin extends Component{
             localStorage.clear();
             redirectVar = <Redirect to="/" />;
         } else {
-            if(cookie.load("cookie") == "ownercookie")
+            if(localStorage.getItem("cookie") == "ownercookie")
                 dashboard = "/OwnerDashboard"
             else{
                 dashboard = "/UserDashboard"

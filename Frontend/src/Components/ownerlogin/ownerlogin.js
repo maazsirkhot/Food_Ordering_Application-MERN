@@ -45,8 +45,12 @@ class OwnerLogin extends Component{
                 if(response.status === 200){
                     console.log("Response Status: " + response.data);
                     localStorage.setItem('token', response.data.token);
+                    localStorage.setItem('cookie', "ownercookie");
+                    localStorage.setItem('cookieemail', response.data.responseMessage.email);
+                    localStorage.setItem('cookiename', response.data.responseMessage.name);
+                    localStorage.setItem('cookierestname', response.data.responseMessage.restname);
                     console.log(response.data.responseMessage);
-                    console.log(this.state.logincheck);
+                    console.log(response.data.token);
                     this.setState({
                         logincheck : true
                     })

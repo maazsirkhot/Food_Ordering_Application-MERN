@@ -19,7 +19,7 @@ class OwnerDashboard extends Component{
     constructor(props){
         super(props);
         this.state = {
-            restname : cookie.load('cookierestname'),
+            restname : localStorage.getItem("cookierestname"),
             newOrders : "",
             otherOrders : "",
             orderCheck : "",

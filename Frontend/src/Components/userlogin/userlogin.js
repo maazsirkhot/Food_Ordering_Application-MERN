@@ -7,11 +7,11 @@ import { connect } from 'react-redux';
 import axios from 'axios';
 import {rooturl} from '../../config';
 
-function mapStateToProps(state){
-    return {
-        userLoginData: state.userLoginData
-    }
-}
+// function mapStateToProps(state){
+//     return {
+//         userLoginData: state.userLoginData
+//     }
+// }
 
 class UserLogin extends Component{
     constructor(props){
@@ -49,9 +49,13 @@ class UserLogin extends Component{
                 console.log("Response Status: " + response.status);
                 if(response.status === 200){
                     localStorage.setItem('token', response.data.token);
+                    localStorage.setItem('cookie', "usercookie");
+                    localStorage.setItem('cookieemail', response.data.responseMessage.username);
+                    localStorage.setItem('cookiename', response.data.responseMessage.name);
+
                     console.log(response.data.responseMessage);
                     console.log(response.data.token);
-                    
+
                     this.setState({
                         logincheck : true
                     })
@@ -116,4 +120,4 @@ class UserLogin extends Component{
 
 }
 
-export default connect(mapStateToProps)(UserLogin);
+export default UserLogin;

@@ -28,7 +28,7 @@ class MenuUpdate extends Component{
     }
 
     componentWillMount(){
-        let restname = cookie.load('cookierestname');
+        let restname = localStorage.getItem("cookierestname");
         this.setState({
             restname : restname
         })

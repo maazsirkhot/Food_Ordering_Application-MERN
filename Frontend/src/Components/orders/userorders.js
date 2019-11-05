@@ -18,7 +18,7 @@ class UserOrders extends Component{
     constructor(props){
         super(props);
         this.state = {
-            username : cookie.load('cookieemail'),
+            username : localStorage.getItem("cookieemail"),
             newOrders : "",
             otherOrders : "",
             orderCheck : "",

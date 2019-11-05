@@ -35,8 +35,8 @@ class OwnerProfile extends Component{
     }
 
     componentWillMount(){
-        if(cookie.load('cookieemail')){
-            var username = cookie.load('cookieemail');
+        if(localStorage.getItem("cookieemail")){
+            var username = localStorage.getItem("cookieemail");
             this.setState({
                 email : username
             })
