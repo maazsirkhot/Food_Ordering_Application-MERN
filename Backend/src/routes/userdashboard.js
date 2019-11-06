@@ -11,8 +11,6 @@ router.route('/UserDashboard').post(passport.authenticate('jwt', { session: fals
     console.log("Inside UserDashboard API");
     
     var searchRestaurant = req.body.itemname;
-    console.log(searchRestaurant);
-
     var msg = {
         searchRestaurant : searchRestaurant
     }
@@ -28,30 +26,8 @@ router.route('/UserDashboard').post(passport.authenticate('jwt', { session: fals
                 console.log("Process successful");
                 res.status(200).send({responseMessage : results.responseMessage});
             }
-            
-            
         }
     });
-
-
-    // Items.distinct('restname', { itemname: { $regex: searchRestaurant, $options: 'i' } }, (err, rows) =>{
-    //     if (err) {
-    //         console.log("unable to get restaurant", err);
-    //         res.status(401).send({responseMessage: err});
-    //     } else {
-    //         console.log("Restaurant Fetched", rows);
-    //         Owners.find({restname : {$in : rows}}, (err, restaurants) => {
-    //             if (err) {
-    //                 console.log("unable to get restaurant", err);
-    //                 res.status(401).send({responseMessage: err});
-    //             } else {
-    //                 console.log("Restaurant Fetched", restaurants);
-    //                 res.status(200).send({responseMessage: restaurants});
-    //             }
-    //         })
-            
-    //     }
-    // })
 
 })
 

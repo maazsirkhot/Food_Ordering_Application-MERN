@@ -20,7 +20,7 @@ class UserDashboard extends Component{
             option : "",
             setLoading : false,
             currentPage : 1,
-            postsPerPage : 1
+            postsPerPage : 5
         }
         this.changeHandler = this.changeHandler.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
@@ -125,12 +125,26 @@ class UserDashboard extends Component{
                 );
         });
 
-        var filterResults = this.state.cuisinesFilter.map(result => {
-            return(
-                <option value={result.cuisine}>{result.cuisine}</option>
-            );
-        });
+        
 
+        var cuisinesList = []
+        
+        var result;
+        for(result of this.state.cuisinesFilter){
+            if(cuisinesList.indexOf(result.cuisine) == -1){
+                console.log(result.cuisine);
+                cuisinesList.push(result.cuisine);
+            }
+        }
+        if(cuisinesList.length > 0){
+            console.log(cuisinesList);
+            var filterResults = cuisinesList.map((result)=> {
+                return(
+                    <option value={result}>{result}</option>
+                );
+            });
+        }
+        
         
 
         let redirectVar = null;

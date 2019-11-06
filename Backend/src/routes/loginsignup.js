@@ -1,9 +1,5 @@
 var express = require('express');
-var pool = require('../helpers/pool');
 var router = express.Router();
-var encrypt = require('../helpers/passwordEncryption');
-var Users = require('../models/users');
-var Owners = require('../models/owners');
 var jwt = require('jsonwebtoken');
 var kafka = require('../../Kafka/client');
 
@@ -36,39 +32,6 @@ router.route('/SignUpUser').post(function(req, res){
             }
         }
     });
-
-    // Users.findOne({username : signupData.username}, (err, rows) => {
-    //     if (err){
-    //         console.log(err);
-    //         console.log("unable to read the database");
-    //         res.status(401).send({responseMessage: err});
-    //     } else {
-    //         if(rows){
-    //             console.log("User already exists");
-    //             res.status(401).send({responseMessage: "User already exists"});
-    //         } else {
-    //             encrypt.createHash(encryptPass, function (response){
-    //                 signupData.password = response;
-    //                 console.log("Encrypted Password is: " + signupData.password);
-                    
-    //                 Users.create(signupData, function (err,user) {
-    //                     if (err) {
-    //                         console.log("unable to insert into database", err);
-    //                         res.status(401).send({responseMessage: err});
-    //                     } else {
-    //                         console.log("User added");
-    //                         res.status(200).send({responseMessage: user})
-    //                     }
-    //                 });
-    //             }, function (err) {
-    //                 console.log(err);
-    //                 res.status(401).send({responseMessage: 'Error Occurred'});
-    //             });
-    //         }
-            
-    //     }
-    // })
-    //password encryption
     
 })
 
@@ -106,38 +69,6 @@ router.route('/SignUpOwner').post(function(req, res){
             }
         }
     });
-
-    // Owners.findOne({email : signupData.email}, (err, rows) => {
-    //     if (err){
-    //         console.log(err);
-    //         console.log("unable to read the database");
-    //         res.status(401).send({responseMessage: err});
-    //     } else {
-    //         if(rows){
-    //             console.log("Owner already exists");
-    //             res.status(401).send({responseMessage: "Owner already exists"});
-    //         } else {
-    //             encrypt.createHash(encryptPass, function (response){
-    //                 signupData.password = response;
-    //                 console.log("Encrypted Password is: " + signupData.password);
-                    
-    //                 Owners.create(signupData, function (err,user) {
-    //                     if (err) {
-    //                         console.log("unable to insert into database", err);
-    //                         res.status(401).send({responseMessage: err});
-    //                     } else {
-    //                         console.log("Owner added");
-    //                         res.status(200).send({responseMessage: user})
-    //                     }
-    //                 });
-    //             }, function (err) {
-    //                 console.log(err);
-    //                 res.status(401).send({responseMessage: 'Error Occurred'});
-    //             });
-    //         }
-            
-    //     }
-    // })
       
 })
 
@@ -153,12 +84,11 @@ router.route('/loginUser').post((req, res) => {
 
     kafka.make_request('loginUser',msg, function(err,results){
         console.log('Sending request to Kafka');
-        //console.log(results);
+        
         if (err){
-            //console.log("Inside err");
+            console.log(err);
             res.status(401).send({responseMessage: 'Authentication failed. Passwords did not match.'});
         }else{
-            //console.log("Inside else");
             var token = jwt.sign({username : results.responseMessage.username}, 'secretkey', {expiresIn : 7200});
             res.cookie('cookie',"usercookie",{maxAge: 900000, httpOnly: false, path : '/'});
             res.cookie('cookieemail',results.responseMessage.username,{maxAge: 900000, httpOnly: false, path : '/'});
@@ -167,41 +97,6 @@ router.route('/loginUser').post((req, res) => {
         }
         
     });
-    //console.log(username, password)
-    // Users.findOne({username : username}, (err, user) => {
-    //     if (err){
-    //         console.log(err);
-    //         console.log("unable to read the database");
-    //         res.status(401).send({responseMessage: err});
-    //     } else {
-    //         if(user) {
-    //             console.log(user);
-    //             encrypt.compareHash(password, user.password, function(err, isMatch){
-    //                 if (isMatch && !err) {
-    //                     var token = jwt.sign({username : user.username}, 'secretkey', {expiresIn : 7200});
-    //                     console.log("User Login Successful");
-    //                     res.cookie('cookie',"usercookie",{maxAge: 900000, httpOnly: false, path : '/'});
-    //                     res.cookie('cookieemail',user.username,{maxAge: 900000, httpOnly: false, path : '/'});
-    //                     res.cookie('cookiename',user.name,{maxAge: 900000, httpOnly: false, path : '/'});
-    //                     res.status(200).send({responseMessage: user, token : 'Bearer ' + token});
-    //                 } else {
-    //                     console.log("Authentication failed. Passwords did not match");
-    //                     res.status(401).json({responseMessage: 'Authentication failed. Passwords did not match.'})
-    //                 }
-
-    //             }, function (err) {
-    //                 console.log(err);
-    //                 res.status(401).json({responseMessage: 'Authentication failed. Passwords did not match.'})
-    //             });
-    //         } else {
-    //             console.log("User does not exist");
-    //             res.status(401).send({responseMessage: 'User does not exist'});
-    //         }
-
-    //     }
-    // })
-
-
     
 });
 
@@ -217,12 +112,10 @@ router.route('/loginOwner').post((req, res) => {
 
     kafka.make_request('loginOwner', msg, function(err,results){
         console.log('Sending request to Kafka');
-        //console.log(results);
         if (err){
-            //console.log("Inside err");
+            console.log("Inside err");
             res.status(401).send({responseMessage: 'Authentication failed. Passwords did not match.'});
         }else{
-            //console.log("Inside else");
             var token = jwt.sign({email : results.responseMessage.email}, 'secretkey', {expiresIn : 7200});
             res.cookie('cookie',"ownercookie",{maxAge: 900000, httpOnly: false, path : '/'});
             res.cookie('cookieemail',results.responseMessage.email,{maxAge: 900000, httpOnly: false, path : '/'});
@@ -232,40 +125,6 @@ router.route('/loginOwner').post((req, res) => {
             }
         
     });
-
-    // Owners.findOne({email : email}, (err, user) => {
-    //     if (err){
-    //         console.log(err);
-    //         console.log("unable to read the database");
-    //         res.status(401).send({responseMessage: err});
-    //     } else {
-    //         if(user) {
-    //             console.log(user);
-    //             encrypt.compareHash(password, user.password, function(err, isMatch){
-    //                 if (isMatch && !err) {
-    //                     var token = jwt.sign({email : user.email}, 'secretkey', {expiresIn : 7200});
-    //                     console.log("User Login Successful");
-    //                     res.cookie('cookie',"ownercookie",{maxAge: 900000, httpOnly: false, path : '/'});
-    //                     res.cookie('cookieemail',email,{maxAge: 900000, httpOnly: false, path : '/'});
-    //                     res.cookie('cookiename',user.name,{maxAge: 900000, httpOnly: false, path : '/'});
-    //                     res.cookie('cookierestname',user.restname,{maxAge: 900000, httpOnly: false, path : '/'});
-    //                     res.status(200).send({responseMessage: user, token : 'Bearer ' + token});
-    //                 } else {
-    //                     console.log("Authentication failed. Passwords did not match");
-    //                     res.status(401).json({responseMessage: 'Authentication failed. Passwords did not match.'})
-    //                 }
-
-    //             }, function (err) {
-    //                 console.log(err);
-    //                 res.status(401).json({responseMessage: 'Authentication failed. Passwords did not match.'})
-    //             });
-    //         } else {
-    //             console.log("User does not exist");
-    //             res.status(401).send({responseMessage: 'User does not exist'});
-    //         }
-
-    //     }
-    // })
     
 });
 

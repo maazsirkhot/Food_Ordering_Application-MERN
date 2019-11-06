@@ -19,7 +19,7 @@ class ViewRestaurant extends Component {
             totalprice : 0,
             orderplaced : "",
             currentPage : 1,
-            postsPerPage : 1
+            postsPerPage : 5
         }
         this.changeHandler = this.changeHandler.bind(this);
         this.onsubmit = this.onsubmit.bind(this);

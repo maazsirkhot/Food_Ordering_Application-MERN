@@ -1,9 +1,5 @@
 var express = require('express');
-var pool = require('../helpers/pool');
 var router = express.Router();
-var crypt = require('../helpers/passwordEncryption');
-var Users = require('../models/users');
-var Owners = require('../models/owners')
 var passport = require('passport');
 var kafka = require('../../Kafka/client');
 
@@ -21,7 +17,6 @@ var upload = multer({storage: storage});
 
 router.route('/OwnerProfile').post(passport.authenticate('jwt', { session: false }), upload.single('imglink'), function(req, res){
     console.log("OwnerProfile");
-    //console.log(req.files);
 
     var signupData = {
         "name": req.body.name,
@@ -45,18 +40,6 @@ router.route('/OwnerProfile').post(passport.authenticate('jwt', { session: false
             res.status(200).send({responseMessage : results.responseMessage});
         }
     });
-    
-    // Owners.findOneAndUpdate({email:signupData.email}, signupData, (err,user) =>{
-    //     if (err) {
-    //         console.log(err);
-    //         console.log("Unable to update Database");
-    //         res.status(400).json({responseMessage: 'Error Occurred'});
-    //     } else {
-    //         console.log("Result:", user)
-    //         console.log("Profile update Successful");
-    //         res.status(200).json({responseMessage: user});
-    //     } 
-    // })
 
 })
 
@@ -70,7 +53,6 @@ router.route('/UserProfile').post(passport.authenticate('jwt', { session: false 
     }
 
     if(req.file){
-        
         signupData.imglink = req.file.filename;
         console.log("Image received", signupData.imglink)
     }
@@ -85,17 +67,6 @@ router.route('/UserProfile').post(passport.authenticate('jwt', { session: false 
         }
     });
     
-    // Users.findOneAndUpdate({username:signupData.username}, signupData, (err,user) =>{
-    //     if (err) {
-    //         console.log(err);
-    //         console.log("Unable to update Database");
-    //         res.status(400).json({responseMessage: 'Error Occurred'});
-    //     } else {
-    //         console.log("Result:", user)
-    //         console.log("Profile update Successful");
-    //         res.status(200).json({responseMessage: user});
-    //     } 
-    // })
 })
 
 router.route('/GetUserProfile').post(passport.authenticate('jwt', { session: false }), function(req, res){
@@ -116,25 +87,12 @@ router.route('/GetUserProfile').post(passport.authenticate('jwt', { session: fal
         }
     });
 
-    // Users.findOne({username:username}, function(err,user){
-    //     if (err) {
-    //         console.log(err);
-    //         console.log("User not found");
-    //         res.status(400).json({responseMessage: 'Error Occurred'});
-    //     } else {
-    //         console.log("user:", user)
-    //         console.log("User Profile Fetched Successful");
-    //         res.status(200).json({responseMessage: user});
-    //     } 
-    // })
-
 })
 
 router.route('/GetOwnerProfile').post(passport.authenticate('jwt', { session: false }), function(req, res){
     console.log("Inside get owner profile");
 
     var email = req.body.email;
-
     var msg = {
         email : email
     }
@@ -148,18 +106,6 @@ router.route('/GetOwnerProfile').post(passport.authenticate('jwt', { session: fa
             res.status(200).send({responseMessage : results.responseMessage});
         }
     });
-
-    // Owners.findOne({email:email}, function(err,user){
-    //     if (err) {
-    //         console.log(err);
-    //         console.log("User not found");
-    //         res.status(400).json({responseMessage: 'Error Occurred'});
-    //     } else {
-    //         console.log("user:", user)
-    //         console.log("Owner Profile Fetched Successful");
-    //         res.status(200).json({responseMessage: user});
-    //     } 
-    // })
 
 })
 

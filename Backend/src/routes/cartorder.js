@@ -7,12 +7,8 @@ var Carts = require('../models/cart');
 var passport = require('passport');
 var kafka = require('../../Kafka/client');
 
-router.route('/Orders').post(passport.authenticate('jwt', { session: false }), function (req, res) {
-    //console.log(req.body);
-
-    //Get userdata from data attribute of object in request. 
+router.route('/Orders').post(passport.authenticate('jwt', { session: false }), function (req, res) { 
     var cart = req.body.data;
-
     var d = new Date();
     var dd = d.getDate();
     var mm = d.getMonth() + 1;
@@ -20,10 +16,7 @@ router.route('/Orders').post(passport.authenticate('jwt', { session: false }), f
     var minutes = d.getMinutes();
     var hr = d.getHours();
     var sec = d.getSeconds();
-
     var cartItems = [];
-
-
     cart.forEach(item => {
         eachItem = {
             cartid: item.username.slice(0, 5) + item.restname.slice(0, 5) + dd + mm + yyyy + hr + minutes + sec,
@@ -37,9 +30,9 @@ router.route('/Orders').post(passport.authenticate('jwt', { session: false }), f
             totalprice: item.totalprice,
             orderstatus: "NEW"
         }
-
         cartItems.push(eachItem);
     });
+    
     console.log(cartItems);
 
     var msg = {
@@ -60,23 +53,12 @@ router.route('/Orders').post(passport.authenticate('jwt', { session: false }), f
         }
     });
 
-    // Carts.collection.insertMany(cartItems, (err, result) => {
-    //     if (err) {
-    //         console.log("Unable to add to cart", err);
-    //         res.status(401).send({ responseMessage: err });
-    //     } else {
-    //         console.log("Order added to cart", result);
-    //         res.status(200).send({ responseMessage: result })
-    //     }
-    // })
-
-
 })
 
 router.route('/getOwnerOrders').post(passport.authenticate('jwt', { session: false }), function (req, res) {
     console.log("Inside getOwnerOrders");
+    
     var restname = req.body.restname;
-
     var msg = {
         restname : restname
     }
@@ -95,100 +77,12 @@ router.route('/getOwnerOrders').post(passport.authenticate('jwt', { session: fal
         }
     });
 
-    // arraySearch = (id, arr) => {
-    //     for (i = 0; i < arr.length; i++) {
-    //         if (arr[i].cartid == id)
-    //             return i;
-    //     }
-    //     return -1;
-    // }
-
-    
-    // newOrders = [];
-    // otherOrders = [];
-
-
-    // Carts.find({ restname: restname }, (err, result) => {
-    //     if (err) {
-    //         console.log("Unable to get orders", err);
-    //         res.status(401).send({ responseMessage: err });
-    //     } else {
-    //         console.log("Order received from cart");
-
-    //         if (result.length > 0) {
-    //             for (item of result) {
-    //                 if (item.orderstatus != 'DELIVERED' && item.orderstatus != 'CANCELLED') {
-    //                     order = arraySearch(item.cartid, newOrders);
-    //                     if (order != -1) {
-    //                         var itm = {
-    //                             itemname: item.itemname,
-    //                             quantity: item.quantity,
-    //                             itemprice: item.itemprice,
-    //                             price: item.price
-    //                         }
-    //                         newOrders[order].items.push(itm);
-    //                     } else {
-    //                         newOrders.push({
-    //                             cartid: item.cartid,
-    //                             username: item.username,
-    //                             address: item.address,
-    //                             orderstatus: item.orderstatus,
-    //                             totalprice: item.totalprice,
-    //                             messages : item.messages,
-    //                             items: [itm = {
-    //                                 itemname: item.itemname,
-    //                                 quantity: item.quantity,
-    //                                 itemprice: item.itemprice,
-    //                                 price: item.price
-    //                             }]
-    //                         })
-    //                     }
-    //                 } else {
-    //                     order = arraySearch(item.cartid, otherOrders);
-    //                     if (order != -1) {
-    //                         var itm = {
-    //                             itemname: item.itemname,
-    //                             quantity: item.quantity,
-    //                             itemprice: item.itemprice,
-    //                             price: item.price
-    //                         }
-    //                         otherOrders[order].items.push(itm);
-    //                     } else {
-    //                         otherOrders.push({
-    //                             cartid: item.cartid,
-    //                             username: item.username,
-    //                             address: item.address,
-    //                             orderstatus: item.orderstatus,
-    //                             totalprice: item.totalprice,
-    //                             items: [itm = {
-    //                                 itemname: item.itemname,
-    //                                 quantity: item.quantity,
-    //                                 itemprice: item.itemprice,
-    //                                 price: item.price
-    //                             }]
-    //                         })
-    //                     }
-    //                 }
-    //             }
-    //             console.log(newOrders, otherOrders);
-    //             allOrders = {
-    //                 newOrders: newOrders,
-    //                 otherOrders: otherOrders
-    //             }
-    //             res.status(200).json({ responseMessage : allOrders});
-
-    //         }
-    //         //res.status(200).send({responseMessage: result})
-    //     }
-    // })
-
 })
 
 router.route('/getUserOrders').post(passport.authenticate('jwt', { session: false }), function (req, res) {
     console.log("Inside getUserOrders");
-    var username = req.body.username;
-    console.log(username);
     
+    var username = req.body.username;
     var msg = {
         username : username
     }
@@ -207,94 +101,11 @@ router.route('/getUserOrders').post(passport.authenticate('jwt', { session: fals
         }
     });
 
-    // arraySearch = (id, arr) => {
-    //     for (i = 0; i < arr.length; i++) {
-    //         if (arr[i].cartid == id)
-    //             return i;
-    //     }
-    //     return -1;
-    // }
-
-    // newOrders = [];
-    // otherOrders = [];
-    
-    // Carts.find({ username: username }, (err, result) => {
-    //     if (err) {
-    //         console.log("Unable to get orders", err);
-    //         res.status(401).send({ responseMessage: err });
-    //     } else {
-    //         console.log("Order received from cart");
-
-    //         if (result.length > 0) {
-    //             for (item of result) {
-    //                 if (item.orderstatus != 'DELIVERED' && item.orderstatus != 'CANCELLED') {
-    //                     order = arraySearch(item.cartid, newOrders);
-    //                     if (order != -1) {
-    //                         var itm = {
-    //                             itemname: item.itemname,
-    //                             quantity: item.quantity,
-    //                             itemprice: item.itemprice,
-    //                             price: item.price
-    //                         }
-    //                         newOrders[order].items.push(itm);
-    //                     } else {
-    //                         newOrders.push({
-    //                             cartid: item.cartid,
-    //                             username: item.username,
-    //                             address: item.address,
-    //                             orderstatus: item.orderstatus,
-    //                             totalprice: item.totalprice,
-    //                             restname : item.restname,
-    //                             items: [itm = {
-    //                                 itemname: item.itemname,
-    //                                 quantity: item.quantity,
-    //                                 itemprice: item.itemprice,
-    //                                 price: item.price
-    //                             }]
-    //                         })
-    //                     }
-    //                 } else {
-    //                     order = arraySearch(item.cartid, otherOrders);
-    //                     if (order != -1) {
-    //                         var itm = {
-    //                             itemname: item.itemname,
-    //                             quantity: item.quantity,
-    //                             itemprice: item.itemprice,
-    //                             price: item.price
-    //                         }
-    //                         otherOrders[order].items.push(itm);
-    //                     } else {
-    //                         otherOrders.push({
-    //                             cartid: item.cartid,
-    //                             username: item.username,
-    //                             address: item.address,
-    //                             orderstatus: item.orderstatus,
-    //                             totalprice: item.totalprice,
-    //                             items: [itm = {
-    //                                 itemname: item.itemname,
-    //                                 quantity: item.quantity,
-    //                                 itemprice: item.itemprice,
-    //                                 price: item.price
-    //                             }]
-    //                         })
-    //                     }
-    //                 }
-    //             }
-    //             console.log(newOrders, otherOrders);
-    //             allOrders = {
-    //                 newOrders: newOrders,
-    //                 otherOrders: otherOrders
-    //             }
-    //             res.status(200).json({ responseMessage : allOrders});
-
-    //         }
-    //         //res.status(200).send({responseMessage: result})
-    //     }
-    // })
 })
 
 router.route('/updateStatus').post(passport.authenticate('jwt', { session: false }), function (req, res) {
     console.log("Inside Order Status Update");
+    
     var updateCart = {
         restname : req.body.restname,
         cartid : req.body.cartid,
@@ -315,28 +126,16 @@ router.route('/updateStatus').post(passport.authenticate('jwt', { session: false
         }
     });
     
-    // Carts.updateMany({cartid : updateCart.cartid}, { $set: updateCart}, (err, result) => {
-    //     if (err) {
-    //         console.log(err);
-    //         console.log("Unable to update Database");
-    //         res.status(400).json({responseMessage: 'Error Occurred'});
-    //     } else {
-    //         console.log("Result:", result)
-    //         console.log("Cart update Successful");
-    //         res.status(200).json({responseMessage: result});
-    //     } 
-    // })
 })
 
 router.route('/addMessage').post(passport.authenticate('jwt', { session: false }), function (req, res){
     console.log("Inside Add Message");
+    
     var cartid = req.body.cartid;
     var msg = {
         author : req.body.username,
         message : req.body.message
     }
-    console.log(msg)
-
     var msgkafka = {
         cartid : cartid,
         msg : msg
@@ -356,23 +155,12 @@ router.route('/addMessage').post(passport.authenticate('jwt', { session: false }
         }
     });
 
-    // Carts.updateMany({cartid : cartid}, {$push: {"messages": msg}}, (err, result) => {
-    //     if (err) {
-    //         console.log(err);
-    //         console.log("Unable to update Database");
-    //         res.status(400).json({responseMessage: 'Error Occurred'});
-    //     } else {
-    //         console.log("Result:", result)
-    //         console.log("Message add Successful");
-    //         res.status(200).json({responseMessage: result});
-    //     } 
-    // })
 })
 
 router.route('/getMessage').post(passport.authenticate('jwt', { session: false }), function (req, res){
     console.log("Inside Get Message");
+    
     var cartid = req.body.cartid;
-
     var msg = {
         cartid : cartid
     }
@@ -391,23 +179,6 @@ router.route('/getMessage').post(passport.authenticate('jwt', { session: false }
         }
     });
 
-    // var messages = [];
-    // console.log(cartid)
-    // Carts.findOne({cartid : cartid}, (err, result) => {
-    //     if (err) {
-    //         console.log(err);
-    //         console.log("Unable to update Database");
-    //         res.status(400).json({responseMessage: 'Error Occurred'});
-    //     } else {
-    //         console.log("Result:", result)
-    //         if(result != null){
-    //             messages = result.messages;
-    //         }
-            
-    //         console.log(messages);
-    //         res.status(200).json({responseMessage: messages});
-    //     } 
-    // })
 })
 
 module.exports = router;
