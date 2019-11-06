@@ -6,6 +6,7 @@ import NavBarLogin from "../navbarlogin";
 import "./userdashboard.css";
 import axios from 'axios';
 import {rooturl} from '../../config';
+import Pagination from '../Pagination';
 
 class ViewRestaurant extends Component {
     constructor(props){
@@ -16,11 +17,14 @@ class ViewRestaurant extends Component {
             menuCheck : "",
             postStatus : "",
             totalprice : 0,
-            orderplaced : ""
+            orderplaced : "",
+            currentPage : 1,
+            postsPerPage : 1
         }
         this.changeHandler = this.changeHandler.bind(this);
         this.onsubmit = this.onsubmit.bind(this);
         this.placeorder = this.placeorder.bind(this);
+        this.paginate = this.paginate.bind(this);
     }
 
     componentWillMount(){
@@ -72,7 +76,7 @@ class ViewRestaurant extends Component {
         var carts = [];
         var element;
         for (element in this.state){
-            if(element == "restname" || element == "menu" || element == "menuCheck" || element == "user" || element == "postStatus" || element == "totalprice" || element == "orderplaced"){
+            if(element == "restname" || element == "menu" || element == "menuCheck" || element == "user" || element == "postStatus" || element == "totalprice" || element == "orderplaced" || element == "currentPage" || element == "postsPerPage"){
                 continue;
             } else {
                 var cartitem = {
@@ -136,7 +140,7 @@ class ViewRestaurant extends Component {
             var total = 0;
             var element;
             for (element in this.state){
-                if(element == "restname" || element == "menu" || element == "menuCheck" || element == "user" || element == "postStatus" || element == "totalprice" || element == "orderplaced"){
+                if(element == "restname" || element == "menu" || element == "menuCheck" || element == "user" || element == "postStatus" || element == "totalprice" || element == "orderplaced" || element == "currentPage" || element == "postsPerPage"){
                     continue;
                 } else {
                     var quantity = this.state[element][1];
@@ -154,8 +158,17 @@ class ViewRestaurant extends Component {
         e.target.src = rooturl + '/uploads/download.png';
     }
 
+    paginate = pageNumber => {
+        this.setState({
+            currentPage : pageNumber
+        })
+    }
+
     render(){
 
+        const indexOfLastPost = this.state.currentPage * this.state.postsPerPage;
+        const indexOfFirstPost = indexOfLastPost - this.state.postsPerPage;
+        const currentPosts = this.state.menu.slice(indexOfFirstPost, indexOfLastPost);
 
         var itemDetails = (items) => {
             var rows = items.map(itm => {
@@ -171,7 +184,8 @@ class ViewRestaurant extends Component {
             })
             return rows;
         }
-        var menuDetails = this.state.menu.map(result => {
+        //this.state.menu
+        var menuDetails = currentPosts.map(result => {
             return(
                 <tbody key={result.section}>
                 <tr><th>{result.section}</th></tr>
@@ -213,6 +227,11 @@ class ViewRestaurant extends Component {
                     </thead>
                     {menuDetails}        
                 </table>
+                <Pagination 
+                    postsPerPage={this.state.postsPerPage}
+                    totalPosts={this.state.menu.length}
+                    paginate={this.paginate}
+                />
                 
                 <button type = "submit"  onClick = {this.placeorder} class="btn btn-danger">Calculate Total</button>
                 <h3>Order Total : {this.state.totalprice}</h3>

@@ -7,6 +7,7 @@ import "../dashboard/userdashboard.css";
 import axios from 'axios';
 import {rooturl} from '../../config';
 import { Modal, Button } from 'react-bootstrap';
+import Draggable from 'react-draggable';
 
 
 const cardstyle = {
@@ -158,6 +159,7 @@ class UserOrders extends Component{
 
         var newOrderDetails = this.state.newOrders.map(result => {
             return(
+                <Draggable bounds="body">
                 <div className="card" style={cardstyle}>
                     <div className="card-header bg-danger text-white">ID : {result.cartid}<br></br>Total : {result.totalprice}</div>
                     <div className="card-body">
@@ -176,11 +178,13 @@ class UserOrders extends Component{
                     <button className="btn btn-danger" data-toggle="modal" data-target="#myModal" value={result.cartid} onClick={this.handleShow}>Message</button>
                     </div>
                 </div>
+                </Draggable>
             );
         });
 
         var otherOrderDetails = this.state.otherOrders.map(result => {
             return(
+                <Draggable bounds="body">
                 <div className="card" style={cardstyle}>
                     <div className="card-header bg-danger text-white">ID : {result.cartid}<br></br>Total : {result.totalprice}</div>
                     <div className="card-body">
@@ -191,6 +195,7 @@ class UserOrders extends Component{
                     </div>
                     </div>
                 </div>
+                </Draggable>
             );
         });
 
@@ -207,8 +212,7 @@ class UserOrders extends Component{
         })
 
     }
-
-
+    
         return(
             <div>
                 <NavBarLogin />
@@ -227,6 +231,7 @@ class UserOrders extends Component{
                 </div>
                 <div class="page-content p-5" >
                     <h4>Your Orders</h4>
+                    
                     <div class="panel-group" id="accordion">
                         <div class="panel panel-default">
                             <div class="panel-heading">
@@ -235,7 +240,9 @@ class UserOrders extends Component{
                                 </h4>
                             </div>
                             <div id="collapse1" class="panel-collapse collapse in">
+                            <div className="card-columns">
                             {newOrderDetails}
+                            </div>
                             </div>
                         </div>
                         <div class="panel panel-default">
@@ -244,8 +251,10 @@ class UserOrders extends Component{
                                 <button class="btn btn-danger" data-toggle="collapse" data-parent="#accordion" data-target="#collapse2">Past Orders</button>
                                 </h4>
                             </div>
-                            <div id="collapse2" class="panel-collapse collapse">
+                            <div id="collapse2" class="panel-collapse collapse in">
+                            <div className="card-columns">
                             {otherOrderDetails}
+                            </div>
                             </div>
                         </div>
                     </div>

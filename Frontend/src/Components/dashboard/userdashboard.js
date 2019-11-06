@@ -6,6 +6,7 @@ import NavBarLogin from "../navbarlogin";
 import "./userdashboard.css";
 import axios from 'axios';
 import {rooturl} from '../../config';
+import Pagination from '../Pagination';
 
 class UserDashboard extends Component{
     constructor(props){
@@ -16,12 +17,16 @@ class UserDashboard extends Component{
             itemname : "",
             searchCheck : "false",
             cuisinesFilter : [],
-            option : ""
+            option : "",
+            setLoading : false,
+            currentPage : 1,
+            postsPerPage : 1
         }
         this.changeHandler = this.changeHandler.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
         this.restaurantpage = this.restaurantpage.bind(this);
         this.applyFilter = this.applyFilter.bind(this);
+        this.paginate = this.paginate.bind(this);
     }
 
     changeHandler = (e) => {
@@ -92,10 +97,24 @@ class UserDashboard extends Component{
         e.target.src = rooturl + '/uploads/download.png';
     }
 
+    paginate = pageNumber => {
+        this.setState({
+            currentPage : pageNumber
+        })
+    }
+    
+
+
 
     
     render(){
-        var searchDetails = this.state.searchResults.map(result => {
+
+        const indexOfLastPost = this.state.currentPage * this.state.postsPerPage;
+        const indexOfFirstPost = indexOfLastPost - this.state.postsPerPage;
+        const currentPosts = this.state.searchResults.slice(indexOfFirstPost, indexOfLastPost);
+        console.log(this.state.searchResults.length);
+
+        var searchDetails = currentPosts.map(result => {
                 return(
                     <tr>
                     <td><img src={rooturl + '/uploads/' + result.restimg} style={{ height: 50, width: 50 }} onError={this.defaultSrc}/></td>
@@ -170,8 +189,13 @@ class UserDashboard extends Component{
                             {searchDetails}
                         </tbody>
                 </table>
+                <Pagination 
+                    postsPerPage={this.state.postsPerPage}
+                    totalPosts={this.state.searchResults.length}
+                    paginate={this.paginate}
+                />
             </div>
-
+            
             </div>
         )
     }
