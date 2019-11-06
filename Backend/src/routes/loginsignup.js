@@ -2,6 +2,18 @@ var express = require('express');
 var router = express.Router();
 var jwt = require('jsonwebtoken');
 var kafka = require('../../Kafka/client');
+var Users = require('../models/users');
+
+router.route('/checkConnection').get(function(req, res){
+    console.log("Checking Request Connection");
+    Users.findOne({username: "marktaylor@gmail.com"}, (err, user) => {
+        if(err)
+        res.status(401).send({responseMessage : err});
+        else
+        res.status(200).send({responseMessage : user});
+    })
+
+})
 
 router.route('/SignUpUser').post(function(req, res){
     var encryptPass = req.body.password;
@@ -89,6 +101,7 @@ router.route('/loginUser').post((req, res) => {
             console.log(err);
             res.status(401).send({responseMessage: 'Authentication failed. Passwords did not match.'});
         }else{
+            console.log(results);
             var token = jwt.sign({username : results.responseMessage.username}, 'secretkey', {expiresIn : 7200});
             res.cookie('cookie',"usercookie",{maxAge: 900000, httpOnly: false, path : '/'});
             res.cookie('cookieemail',results.responseMessage.username,{maxAge: 900000, httpOnly: false, path : '/'});

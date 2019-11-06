@@ -17,13 +17,14 @@ describe('Grubhub Test Cases:', () => {
         })
     })
 
-    it("Case : Get All Owner Orders", (done) => {
+
+    it("Case : User login check", (done) => {
         chai.request('http://localhost:3001')
-        .post('/getOwnerOrders')
+        .post('/loginUser')
         .set('Accept', 'application/json')
         .send({
-            "owneremail" : "ssrane@live.in",
-            "restname" : "Jalgaon Special"
+            "username" : "marktaylor@gmail.com",
+            "password" : "password"
         })
         .then((res) => {
             expect(res.status).to.equal(200);
@@ -31,12 +32,12 @@ describe('Grubhub Test Cases:', () => {
         })
     })
 
-    it("Case : User login check", (done) => {
+    it("Case : Owner login check", (done) => {
         chai.request('http://localhost:3001')
-        .post('/loginUser')
+        .post('/loginOwner')
         .set('Accept', 'application/json')
         .send({
-            "username" : "akshaytate@gmail.com",
+            "username" : "ssrane@live.com",
             "password" : "password"
         })
         .then((res) => {
@@ -50,7 +51,7 @@ describe('Grubhub Test Cases:', () => {
         .post('/GetMenu')
         .set('Accept', 'application/json')
         .send({
-            "restname" : "Jalgaon Special"
+            "restname" : "Indian Pizzeria"
         })
         .then((res) => {
             expect(res.status).to.equal(200);
@@ -63,15 +64,12 @@ describe('Grubhub Test Cases:', () => {
         .post('/GetOwnerProfile')
         .set('Accept', 'application/json')
         .send({
-            "email" : "ssrane@live.in"
+            "email" : "ssrane@live.com"
         })
         .then((res) => {
             expect(res.status).to.equal(200);
             done();
         })
     })
-
-    
-
 
 })
