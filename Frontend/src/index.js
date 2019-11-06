@@ -9,7 +9,7 @@ import store from "./Redux/Store/store";
 
 
 ReactDOM.render(
-    <App />, 
+    <Provider store={store}><App /></Provider>, 
     document.getElementById('root')
     );
 

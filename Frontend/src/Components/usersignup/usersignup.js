@@ -5,7 +5,21 @@ import NavBar from "../navbar";
 import './usersignup.css'; 
 import axios from 'axios';
 import {rooturl} from '../../config';
+import { signup, signin } from '../../Redux/Actions/loginAction';
+import { connect } from 'react-redux';
 
+function mapStateToProps(state){
+    return {
+        userLoginData: state.userLoginData
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        signup: (signupdata) => dispatch(signup(signupdata)),
+        signin: (signindata) => dispatch(signin(signindata))
+    };
+}
 
 class UserSignUp extends Component{
     constructor(props){
@@ -47,10 +61,20 @@ class UserSignUp extends Component{
                 console.log("Response Status: " + response.status);
                 if(response.status === 200){
                     console.log(response.status);
+                    var signupdata = {
+                        signupstatus : true,
+                        signupmessage : "Sign Up Successful"
+                    }
+                    this.props.signup(signupdata);
                     this.setState({
                         signupcheck : true
                     })
                 } else {
+                    var signupdata = {
+                        signupstatus : false,
+                        signupmessage : "Sign Up Unsuccessful"
+                    }
+                    this.props.signup(signupdata);
                     this.setState({
                         signupcheck : false
                     })
@@ -59,6 +83,11 @@ class UserSignUp extends Component{
             })
             .catch(err => {
                 console.log(err);
+                var signupdata = {
+                    signupstatus : false,
+                    signupmessage : "Sign Up Unsuccessful"
+                }
+                this.props.signup(signupdata);
                 alert("Signup Failed. Please try again!");
                 this.setState({
                     signupcheck : false
@@ -119,4 +148,4 @@ class UserSignUp extends Component{
 
 }
 
-export default UserSignUp;
+export default connect(mapStateToProps, mapDispatchToProps)(UserSignUp);

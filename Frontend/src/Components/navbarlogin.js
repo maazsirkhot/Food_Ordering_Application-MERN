@@ -3,6 +3,20 @@ import cookie from 'react-cookies';
 import {Link} from 'react-router-dom';
 import bootstrap from 'bootstrap';
 import {Redirect} from 'react-router';
+import { signout } from '../Redux/Actions/loginAction';
+import { connect } from 'react-redux';
+
+function mapStateToProps(state){
+    return {
+        userLoginData: state.userLoginData
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        signout : () => dispatch(signout())
+    };
+}
 
 class NavBarLogin extends Component{
     constructor(props){
@@ -27,6 +41,8 @@ class NavBarLogin extends Component{
         cookie.remove('cookiename', { path: '/' });
         cookie.remove('cookierestname', { path: '/' });
         localStorage.clear();
+        this.props.signout();
+
     }
 
     render() {
@@ -77,4 +93,4 @@ class NavBarLogin extends Component{
 
 }
 
-export default NavBarLogin;
+export default connect(mapStateToProps, mapDispatchToProps)(NavBarLogin);

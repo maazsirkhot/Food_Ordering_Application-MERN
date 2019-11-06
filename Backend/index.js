@@ -19,7 +19,7 @@ var jwt = require('jsonwebtoken');
  
 
 mongoose
-  .connect(db, { useNewUrlParser: true, useUnifiedTopology: true, poolSize: 100 }) // Let us remove that nasty deprecation warrning :)
+  .connect(db, { useNewUrlParser: true, useUnifiedTopology: true, poolSize: 100 })
   .then(() => console.log('MongoDB Connected'))
   .catch(err => console.log(err));
 

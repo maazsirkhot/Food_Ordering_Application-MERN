@@ -6,7 +6,20 @@ import './ownerlogin.css';
 import { connect } from 'react-redux'; 
 import axios from 'axios';
 import {rooturl} from '../../config';
+import { signup, signin } from '../../Redux/Actions/loginAction';
 
+function mapStateToProps(state){
+    return {
+        userLoginData: state.userLoginData
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        signup: (signupdata) => dispatch(signup(signupdata)),
+        signin: (signindata) => dispatch(signin(signindata))
+    };
+}
 
 class OwnerLogin extends Component{
     constructor(props){
@@ -51,12 +64,21 @@ class OwnerLogin extends Component{
                     localStorage.setItem('cookierestname', response.data.responseMessage.restname);
                     console.log(response.data.responseMessage);
                     console.log(response.data.token);
+
+                    var signindata = {
+                        signinstatus : true,
+                        signinmessage : response.data.responseMessage.name + " signed in"
+                    }
+                    this.props.signin(signindata);
                     this.setState({
                         logincheck : true
                     })
-                    
-                    
                 } else {
+                    var signindata = {
+                        signinstatus : false,
+                        signinmessage : "Sign In Failed"
+                    }
+                    this.props.signin(signindata);
                     this.setState({
                         logincheck : false
                     })
@@ -64,6 +86,11 @@ class OwnerLogin extends Component{
             })
             .catch(err => {
                 console.log(err);
+                var signindata = {
+                    signinstatus : false,
+                    signinmessage : "Sign In Failed"
+                }
+                this.props.signin(signindata);
                 this.setState({
                     logincheck : false
                 })
@@ -119,4 +146,4 @@ class OwnerLogin extends Component{
 
 }
 
-export default OwnerLogin;
+export default connect(mapStateToProps, mapDispatchToProps)(OwnerLogin);

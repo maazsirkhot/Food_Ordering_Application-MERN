@@ -5,6 +5,21 @@ import NavBar from "../navbar";
 import './ownersignup.css'; 
 import axios from 'axios';
 import {rooturl} from '../../config';
+import { signup, signin } from '../../Redux/Actions/loginAction';
+import { connect } from 'react-redux';
+
+function mapStateToProps(state){
+    return {
+        userLoginData: state.userLoginData
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        signup: (signupdata) => dispatch(signup(signupdata)),
+        signin: (signindata) => dispatch(signin(signindata))
+    };
+}
 
 class OwnerSignUp extends Component{
     constructor(props){
@@ -52,10 +67,23 @@ class OwnerSignUp extends Component{
                 console.log("Response Status: " + response.status);
                 if(response.status === 200){
                     console.log(response.status);
+                    var signupdata = {
+                        signupstatus : true,
+                        signupmessage : "Sign Up Successful"
+                    }
+                    this.props.signup(signupdata);
+                    this.setState({
+                        logincheck : true
+                    })
                     this.setState({
                         signupcheck : true
                     })
                 } else {
+                    var signupdata = {
+                        signupstatus : false,
+                        signupmessage : "Sign Up Unsuccessful"
+                    }
+                    this.props.signup(signupdata);
                     this.setState({
                         signupcheck : false
                     })
@@ -65,6 +93,11 @@ class OwnerSignUp extends Component{
             .catch(err => {
                 console.log(err);
                 alert("Signup Failed. Please try again!");
+                var signupdata = {
+                    signupstatus : false,
+                    signupmessage : "Sign Up Unsuccessful"
+                }
+                this.props.signup(signupdata);
                 this.setState({
                     signupcheck : false
                 })
@@ -141,4 +174,4 @@ class OwnerSignUp extends Component{
 
 }
 
-export default OwnerSignUp;
+export default connect(mapStateToProps, mapDispatchToProps)(OwnerSignUp);
