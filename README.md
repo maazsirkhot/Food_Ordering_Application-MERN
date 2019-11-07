@@ -4,8 +4,6 @@ Technologies: MongoDB, Express, React, NodeJs, Passport-JWT, Kafka, Redux, AWS E
 
 This is a simulator of a food ordering application similar to Grubhub. Application is built for the sole purpose of learning and demonstrating full stack web development using RESTful services. The backend is created using NodeJS and Express framework whereas front end development is done using React, HTML and Bootsrap.
 
-Relational Database MYSQL supports storing of data which is hosted on AWS RDS.
-
 Steps to use this project:
 1. Git Clone Repository
 2. Change Directory in terminal to /Backend and use command 'npm install' to install all dependencies.
